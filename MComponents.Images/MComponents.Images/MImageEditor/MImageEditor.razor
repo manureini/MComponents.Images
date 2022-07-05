@@ -1,0 +1,99 @@
+﻿@using System.IO
+@using MComponents.Images.Helper
+@using MComponents.MLoading
+@using Microsoft.AspNetCore.Components.Forms
+
+<div class="m-image-editor">
+
+    <InputFile OnChange="@LoadFiles" accept="image/*" />
+
+    @if (mLoading)
+    {
+        <MSpinner />
+    }
+
+    @if (mLocalImageUrl != null)
+    {
+        <img src="@mLocalImageUrl" />
+    }
+
+</div>
+
+@code {
+
+    protected byte[] mImageData;
+    protected string mLocalImageUrl;
+    protected string mContentType;
+
+    protected bool mLoading;
+    protected bool mFirstLoadingDone;
+
+    [Parameter]
+    public IBrowserFile Image { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        if (mFirstLoadingDone)
+            return;
+
+        mImageData = null;
+
+        if (Image != null)
+        {
+            using var stream = Image.OpenReadStream(Constants.MAX_FILE_SIZE);
+            using MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+
+            mImageData = ms.ToArray();
+            mContentType = Image.ContentType;
+
+            mFirstLoadingDone = true;
+        }
+
+        ShowBrowserFile();
+    }
+
+    protected async void LoadFiles(InputFileChangeEventArgs e)
+    {
+        if (e.FileCount <= 0)
+            return;
+
+        Image = null;
+        mImageData = null;
+        mLocalImageUrl = null;
+
+        mLoading = true;
+        StateHasChanged();
+
+        await Task.Delay(200);
+
+        mImageData = await BrowserFileHelper.ResizeAndGetImage(e.File);
+        mContentType = BrowserFileHelper.DEFAULT_CONTENT_TYPE;
+
+        mLoading = false;
+
+        ShowBrowserFile();
+        StateHasChanged();
+    }
+
+    protected void ShowBrowserFile()
+    {
+        if (mImageData == null)
+        {
+            mLocalImageUrl = null;
+            return;
+        }
+
+        mLocalImageUrl = string.Format($"data:{mContentType};base64, {Convert.ToBase64String(mImageData)}");
+    }
+
+    public IBrowserFile GetImageAsBrowserFile()
+    {
+        if (Image != null)
+            return Image;
+
+        return new MUploadedImage("Image.jpg", mContentType, mImageData);
+    }
+}
