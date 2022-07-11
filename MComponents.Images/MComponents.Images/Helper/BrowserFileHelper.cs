@@ -42,10 +42,24 @@ namespace MComponents.Images.Helper
 
         private static Image ResizeBitmap(Image pBitmap, int pMaxWidth, int pMaxHeight)
         {
-            int width = Math.Min(pMaxWidth, pBitmap.Width);
-            int height = Math.Min(pMaxHeight, pBitmap.Height);
+            double resizeWidth = pBitmap.Width;
+            double resizeHeight = pBitmap.Height;
 
-            pBitmap.Mutate(x => x.Resize(width, height));
+            double aspect = resizeWidth / resizeHeight;
+
+            if (resizeWidth > pMaxWidth)
+            {
+                resizeWidth = pMaxWidth;
+                resizeHeight = resizeWidth / aspect;
+            }
+            if (resizeHeight > pMaxHeight)
+            {
+                aspect = resizeWidth / resizeHeight;
+                resizeHeight = pMaxHeight;
+                resizeWidth = resizeHeight * aspect;
+            }
+
+            pBitmap.Mutate(x => x.Resize((int)resizeWidth, (int)resizeHeight));
 
             return pBitmap;
         }
