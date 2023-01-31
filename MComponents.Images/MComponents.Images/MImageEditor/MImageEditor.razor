@@ -91,6 +91,9 @@
 
     public IBrowserFile GetImageAsBrowserFile()
     {
+        if (mImageData == null)
+            return null;
+
         if (Image != null)
             return Image;
 
