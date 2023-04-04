@@ -5,18 +5,13 @@
 @inject IStringLocalizer L
 
 <div class="m-image-preview-editor">
-    @if (mBrowserFile != null || mEditImage || mImageUrl == null)
-    {
-        <MImageEditor @ref="mImageEditor" Image=mBrowserFile />
+    <MImageEditor @ref="mImageEditor" Image=mBrowserFile />
 
-        <div class="m-image-preview-editor-buttons">
-
-            <button class="m-btn m-btn-primary" @onclick=OnBtnSave>@L[nameof(MComponentsLocalization.Submit)]</button>
-            <button class="m-btn m-btn-primary" @onclick=OnBtnBack>@L[nameof(MComponentsLocalization.Back)]</button>
-            <button class="m-btn m-btn-primary" @onclick=DeleteImage><i class="fas fa-trash-alt"></i></button>
-
-        </div>
-    }
+    <div class="m-image-preview-editor-buttons">
+        <button class="m-btn m-btn-primary" @onclick=OnBtnSave>@L[nameof(MComponentsLocalization.Submit)]</button>
+        <button class="m-btn m-btn-primary" @onclick=OnBtnBack>@L[nameof(MComponentsLocalization.Back)]</button>
+        <button class="m-btn m-btn-primary" @onclick=DeleteImage><i class="fas fa-trash-alt"></i></button>
+    </div>
 </div>
 
 @code {
@@ -24,12 +19,6 @@
     protected MImageEditor mImageEditor;
 
     protected IBrowserFile mBrowserFile;
-    protected string mImageUrl;
-
-    protected void OnBtnEdit()
-    {
-        mEditImage = true;
-    }
 
     protected virtual Task OnBtnSave()
     {

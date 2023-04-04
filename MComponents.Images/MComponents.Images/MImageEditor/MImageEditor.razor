@@ -4,56 +4,16 @@
 @using Microsoft.AspNetCore.Components.Forms
 
 <div class="m-image-editor">
-
     <InputFile OnChange="@LoadFiles" accept="image/*" />
-
-    @if (mLoading)
-    {
-        <MSpinner />
-    }
-
-    @if (mLocalImageUrl != null)
-    {
-        <img src="@mLocalImageUrl" />
-    }
-
+    <MImageViewer @ref=mImageViewer Image="Image" />
 </div>
 
 @code {
 
-    protected byte[] mImageData;
-    protected string mLocalImageUrl;
-    protected string mContentType;
-
-    protected bool mLoading;
-    protected bool mFirstLoadingDone;
-
     [Parameter]
     public IBrowserFile Image { get; set; }
 
-    protected override async Task OnParametersSetAsync()
-    {
-        await base.OnParametersSetAsync();
-
-        if (mFirstLoadingDone)
-            return;
-
-        mImageData = null;
-
-        if (Image != null)
-        {
-            using var stream = Image.OpenReadStream(Constants.MAX_FILE_SIZE);
-            using MemoryStream ms = new MemoryStream();
-            await stream.CopyToAsync(ms);
-
-            mImageData = ms.ToArray();
-            mContentType = Image.ContentType;
-
-            mFirstLoadingDone = true;
-        }
-
-        ShowBrowserFile();
-    }
+    protected MImageViewer mImageViewer;
 
     protected async void LoadFiles(InputFileChangeEventArgs e)
     {
@@ -61,42 +21,21 @@
             return;
 
         Image = null;
-        mImageData = null;
-        mLocalImageUrl = null;
+        mImageViewer.ResetImage();
 
-        mLoading = true;
+        await Task.Delay(100);
+
+        mImageViewer.SetContentType(BrowserFileHelper.DEFAULT_CONTENT_TYPE);
+
+        var imageData = await BrowserFileHelper.ResizeAndGetImage(e.File);
+        mImageViewer.SetImageData(imageData);
+
+        mImageViewer.ShowBrowserFile();
         StateHasChanged();
-
-        await Task.Delay(200);
-
-        mImageData = await BrowserFileHelper.ResizeAndGetImage(e.File);
-        mContentType = BrowserFileHelper.DEFAULT_CONTENT_TYPE;
-
-        mLoading = false;
-
-        ShowBrowserFile();
-        StateHasChanged();
-    }
-
-    protected void ShowBrowserFile()
-    {
-        if (mImageData == null)
-        {
-            mLocalImageUrl = null;
-            return;
-        }
-
-        mLocalImageUrl = string.Format($"data:{mContentType};base64, {Convert.ToBase64String(mImageData)}");
     }
 
     public IBrowserFile GetImageAsBrowserFile()
     {
-        if (mImageData == null)
-            return null;
-
-        if (Image != null)
-            return Image;
-
-        return new MUploadedImage("Image.jpg", mContentType, mImageData);
+        return mImageViewer.GetImageAsBrowserFile();
     }
 }

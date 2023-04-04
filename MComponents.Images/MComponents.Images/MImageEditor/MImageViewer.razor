@@ -1,0 +1,99 @@
+﻿@using System.IO
+@using MComponents.Images.Helper
+@using MComponents.MLoading
+@using Microsoft.AspNetCore.Components.Forms
+
+<div class="m-image-viewer">
+
+    @if (mLoading)
+    {
+        <MSpinner />
+    }
+
+    @if (mLocalImageUrl != null)
+    {
+        <img src="@mLocalImageUrl" />
+    }
+
+</div>
+
+@code {
+
+    protected byte[] mImageData;
+    protected string mLocalImageUrl;
+    protected string mContentType;
+
+    protected bool mLoading;
+    protected bool mIsInitialized;
+
+    [Parameter]
+    public IBrowserFile Image { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        if (mIsInitialized)
+            return;
+
+        mImageData = null;
+
+        if (Image != null)
+        {
+            using var stream = Image.OpenReadStream(Constants.MAX_FILE_SIZE);
+            using MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+
+            mImageData = ms.ToArray();
+            mContentType = Image.ContentType;
+
+            mIsInitialized = true;
+        }
+
+        ShowBrowserFile();
+    }
+
+    public void ShowBrowserFile()
+    {
+        if (mImageData == null)
+        {
+            mLocalImageUrl = null;
+            return;
+        }
+
+        mLocalImageUrl = string.Format($"data:{mContentType};base64, {Convert.ToBase64String(mImageData)}");
+        mLoading = false;
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    public void SetImageData(byte[] pImageData)
+    {
+        mImageData = pImageData;
+    }
+
+    public void SetContentType(string pContentType)
+    {
+        mContentType = pContentType;
+    }
+
+    public void ResetImage()
+    {
+        Image = null;
+        mImageData = null;
+        mLocalImageUrl = null;
+        mLoading = true;
+        mIsInitialized = false;
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    public IBrowserFile GetImageAsBrowserFile()
+    {
+        if (mImageData == null)
+            return null;
+
+        if (Image != null)
+            return Image;
+
+        return new MUploadedImage("Image.jpg", mContentType, mImageData);
+    }
+}
