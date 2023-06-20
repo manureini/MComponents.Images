@@ -2,6 +2,7 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -15,7 +16,16 @@ namespace MComponents.Images.Helper
         {
             // var browserFile = await pBrowerFile.RequestImageFileAsync(DEFAULT_CONTENT_TYPE, 1000, 1000);
 
-            var img = await Image.LoadAsync(pBrowerFile.OpenReadStream(Constants.MAX_FILE_SIZE));
+            Image img;
+
+            try
+            {
+                img = await Image.LoadAsync(pBrowerFile.OpenReadStream(Constants.MAX_FILE_SIZE));
+            }
+            catch
+            {
+                return null;
+            }
 
             if (img == null)
                 return null;

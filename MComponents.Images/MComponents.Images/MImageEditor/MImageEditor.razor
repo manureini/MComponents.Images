@@ -1,10 +1,16 @@
 ﻿@using System.IO
 @using MComponents.Images.Helper
 @using MComponents.MLoading
+@using MComponents.Notifications;
+@using MComponents.Resources;
 @using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Localization;
+
+@inject IMNotificationService MNotificationService
+@inject IStringLocalizer L
 
 <div class="m-image-editor">
-    <InputFile OnChange="@LoadFiles" accept="image/*" />
+    <InputFile OnChange="@LoadFiles" accept="image/png, image/jpeg, image/webp, image/tiff, image/gif, image/bmp" />
     <MImageViewer @ref=mImageViewer Image="Image" />
 </div>
 
@@ -25,12 +31,22 @@
 
         await Task.Delay(100);
 
-        mImageViewer.SetContentType(BrowserFileHelper.DEFAULT_CONTENT_TYPE);
-
         var imageData = await BrowserFileHelper.ResizeAndGetImage(e.File);
+
+        mImageViewer.SetContentType(BrowserFileHelper.DEFAULT_CONTENT_TYPE);
         mImageViewer.SetImageData(imageData);
 
         mImageViewer.ShowBrowserFile();
+
+        if (imageData == null)
+        {
+            MNotificationService.ShowNotification(new Notification()
+                {
+                    IsError = true,
+                    Text = L[nameof(MComponentsLocalization.InvalidImageError)]
+                });
+        }
+
         StateHasChanged();
     }
 

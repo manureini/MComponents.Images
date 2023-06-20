@@ -55,14 +55,16 @@
 
     public void ShowBrowserFile()
     {
+        mLoading = false;
+
         if (mImageData == null)
         {
             mLocalImageUrl = null;
+            _ = InvokeAsync(StateHasChanged);
             return;
         }
 
         mLocalImageUrl = string.Format($"data:{mContentType};base64, {Convert.ToBase64String(mImageData)}");
-        mLoading = false;
         _ = InvokeAsync(StateHasChanged);
     }
 
