@@ -5,10 +5,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.1" />
-		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.10" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
 	</ItemGroup>
 
 	<ItemGroup>
