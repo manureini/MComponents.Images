@@ -5,11 +5,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.7" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.7" />
-		<PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.7" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.7" />
-		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.8" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.8" />
+		<PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.8" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
 	</ItemGroup>
 
 	<ItemGroup>
